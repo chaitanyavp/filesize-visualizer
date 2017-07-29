@@ -9,7 +9,7 @@ _FILEPATH = ""
 def create_homescreen():
     """
     Creates the home screen which the user will initially use to run the
-    visualization.
+    visualization using tkinter.
     """
     _ROOT = tkinter.Tk("Filesize Visualizer")
     _ROOT.geometry("300x200")
@@ -37,8 +37,8 @@ def create_homescreen():
 
 def _open_file_screen():
     """
-    Opens the File Selection screen so the user can choose a path to be
-    visualized.
+    Opens the File Selection screen so the user can choose a directory to be
+    visualized. However, you cannot choose a lone file for visualization.
     """
     global _FILEPATH
     _FILEPATH = askdirectory()
@@ -47,13 +47,11 @@ def _open_file_screen():
 
 def get_filepath():
     """
-    Prompts user to select file/folder and returns the path.
+    The encompassing method which generates the home screen, and gets a
+    directory string to be visualized.
+
     :return: Path of selected file.
     :rtype: String
     """
     create_homescreen()
     return _FILEPATH
-
-
-if __name__ == "__main__":
-    print(get_filepath())
