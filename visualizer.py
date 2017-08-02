@@ -1,4 +1,7 @@
 import pygame
+from size_processor import SizeProcessor
+from homescreen import Homescreen
+import random
 
 
 class Visualizer:
@@ -19,6 +22,10 @@ class Visualizer:
     def __init__(self):
         pygame.init()
         self._file_list = []
+
+        homescreen = Homescreen()
+        self._size_processor = SizeProcessor(homescreen.get_filepath())
+
         self._screen_width = 800
         self._screen_height = 600
 
@@ -28,10 +35,24 @@ class Visualizer:
 
         return: None
         """
-        file_display = pygame.display.set_mode([self._screen_width, self._screen_height])
-        for file_to_draw in self._file_list:
-            pygame.draw.rect(file_display, (file_to_draw[0], file_to_draw[0]), (file_to_draw[2], file_to_draw[3]))
+        file_display = pygame.display.set_mode(
+            [self._screen_width, self._screen_height])
+
+        print(self._size_processor.calculate_rectangles(
+                0, 0, self._screen_width, self._screen_height,
+                self._size_processor.get_file_tree(), True))
+
+        for rectangle in self._size_processor.calculate_rectangles(
+                0, 0, self._screen_width, self._screen_height,
+                self._size_processor.get_file_tree(), True):
+
+            pygame.draw.rect(file_display, self.generate_random_color(), rectangle)
         self.event_listener()
+
+    def _update_text(self, new_text):
+        """
+        Stub for the update text method.
+        """
 
     def event_listener(self):
         """
@@ -46,8 +67,9 @@ class Visualizer:
                 if event.type == pygame.QUIT:
                     continue_running = False
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    display_text = self.process_left_click(pygame.mouse.get_pos())
-                    update_text(display_text)
+                    display_text = self.process_left_click(
+                        pygame.mouse.get_pos())
+                    self._update_text(display_text)
                 elif event.type == pygame.KEYUP:
                     self.process_up_key()
                 elif event.type == pygame.KEYDOWN:
@@ -66,9 +88,10 @@ class Visualizer:
         return: None
         """
         text_to_display = ""
-        selected_file = find_file(pos[0], pos[1], self._screen_width, self._screen_height)
-        text_to_display = selected_file.path_name + " " + selected_file.file_size + " " + \
-                          selected_file.subfolders.size + " subfolders"
+        # selected_file = find_file(pos[0], pos[1], self._screen_width,
+        #                           self._screen_height)
+        # text_to_display = selected_file.path_name + " " + selected_file.file_size + " " + \
+        #                   selected_file.subfolders.size + " subfolders"
         return text_to_display
 
     def process_up_key(self):
@@ -80,6 +103,12 @@ class Visualizer:
         """
         Stub for the down key event.
         """
+
+    def generate_random_color(self):
+        red_value = random.randint(0, 255)
+        green_value = random.randint(0, 255)
+        blue_value = random.randint(0, 255)
+        return (red_value, green_value, blue_value)
 
 
 if __name__ == "__main__":
