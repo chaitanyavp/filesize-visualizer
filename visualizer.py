@@ -38,14 +38,18 @@ class Visualizer:
 
         return: None
         """
-        print(self._size_processor.calculate_rectangles(
-                0, 0, self._screen_width, self._screen_height,
-                self._size_processor.get_file_tree(), True))
+        # print(self._size_processor.calculate_rectangles(
+        #         0, 0, self._screen_width, self._screen_height,
+        #         self._size_processor.get_file_tree(), True))
 
         for rectangle in self._size_processor.calculate_rectangles(
                 0, 0, self._screen_width, self._screen_height,
                 self._size_processor.get_file_tree(), True):
             curr_colour = self.generate_random_color()
+
+            # To check for black bars:
+            # curr_colour = (255,255,255)
+
             pygame.draw.rect(self._file_display, curr_colour, rectangle)
 
 

@@ -13,6 +13,7 @@ class SizeProcessor:
     @type _file_tree: Tuple<string, List<Tuple>>
         A directory, compriesed of its path and its subfolders.
     """
+
     def __init__(self, folder_path, divider="/"):
         self._divider = divider
         self._file_sizes = {}
@@ -39,7 +40,7 @@ class SizeProcessor:
 
     def get_file_tree(self):
         """
-        Gets the path for this directory (I think...?)
+        Gets a tree containing the folder path heirarchy.
         """
         return self._file_tree
 
@@ -51,46 +52,78 @@ class SizeProcessor:
 
     def calculate_rectangles(self, x, y, width, height, file_tree, into_column):
         """
-        A loop that uses the original/root directory, and creates rectangular tuples
-        out of itself and its subfolders recursively.
+        A loop that uses the original/root directory, and creates rectangular
+        tuples out of itself and its subfolders recursively.
         It later returns the list to be visualized on screen.
         """
+        width = int(width)
+        height = int(height)
+
+        init_x = x
+        init_y = y
+
         # Loop through subtrees of
         rect_list = []
-        for item in file_tree[1]:
-            # if item is not a directory, add its proportion
-            # otherwise recurse.
-            print(item[0])
+        for item in file_tree[1][:-1]:
+
+            # Check for folders containing only empty subfolders
+            if self._file_sizes[file_tree[0]] == 0:
+                continue
+
             proportion = self._file_sizes[item[0]] / \
                          self._file_sizes[file_tree[0]]
 
-            # Unimplemented code for decimal rounding
-            # Accounts for decimal roundoffs
-            # whole_proportion = proportion[:]
-            # dec_proportion = 0.0
-            # if proportion % 1 != 0:
-            #     dec_proportion = proportion - int(proportion)
-            #     whole_proportion -= dec_proportion
+            # if item is not a directory, add its proportion
+            # otherwise recurse.
+            if into_column:
+                if not os.path.isdir(item[0]):
+                    rect_list.append((x, y, int(proportion * width), height))
+                else:
+                    rect_list += self.calculate_rectangles(x, y,
+                                                           int(proportion * width),
+                                                           height, item,
+                                                           not into_column)
+                x += int(proportion * width)
 
-            if not os.path.isdir(item[0]):
-                rect_list.append((x, y, proportion * width, height))
             else:
-                rect_list += self.calculate_rectangles(x, y, proportion * width,
+                if not os.path.isdir(item[0]):
+                    rect_list.append((x, y, width, int(proportion * height)))
+                else:
+                    rect_list += self.calculate_rectangles(x, y, width,
+                                                           int(proportion * height),
+                                                           item,
+                                                           not into_column)
+                y += int(proportion * height)
+
+        if len(file_tree[1]) == 0:
+            return rect_list
+
+        item = file_tree[1][-1]
+
+        if into_column:
+            if not os.path.isdir(item[0]):
+                rect_list.append((x, y, width - (x - init_x), height))
+            else:
+                rect_list += self.calculate_rectangles(x, y,
+                                                       width - (x - init_x),
                                                        height, item,
                                                        not into_column)
 
-            x += proportion*width
-
-            # Unimplemented code for decimal rounding
-            # x += whole_proportion*width
-            # self._decimal_addon += dec_proportion
+        else:
+            if not os.path.isdir(item[0]):
+                rect_list.append((x, y, width, height - (y - init_y)))
+            else:
+                rect_list += self.calculate_rectangles(x, y, width,
+                                                       height - (y - init_y),
+                                                       item,
+                                                       not into_column)
 
         return rect_list
 
 
 if __name__ == "__main__":
-    # Test by adding a filepath below:
+    # Sanity check by adding a filepath below:
     s = SizeProcessor("Add filepath here")
     print(s.get_file_tree())
     print(list(s.get_file_sizes().items()))
-    print(s.calculate_rectangles(0, 0, True))
+    print(s.calculate_rectangles(0, 0, 800, 600, s.get_file_tree(), True))
