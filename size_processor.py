@@ -70,53 +70,60 @@ class SizeProcessor:
             if self._file_sizes[file_tree[0]] == 0:
                 continue
 
+            # Calculate proportion of current item
             proportion = self._file_sizes[item[0]] / \
                          self._file_sizes[file_tree[0]]
 
-            # if item is not a directory, add its proportion
-            # otherwise recurse.
+            # Use this to calculate the height and width of its rectangle
             if into_column:
-                if not os.path.isdir(item[0]):
-                    rect_list.append((x, y, int(proportion * width), height))
-                else:
-                    rect_list += self.calculate_rectangles(x, y,
-                                                           int(proportion * width),
-                                                           height, item,
-                                                           not into_column)
-                x += int(proportion * width)
-
+                new_width = int(proportion * width)
+                new_height = height
             else:
-                if not os.path.isdir(item[0]):
-                    rect_list.append((x, y, width, int(proportion * height)))
-                else:
-                    rect_list += self.calculate_rectangles(x, y, width,
-                                                           int(proportion * height),
-                                                           item,
-                                                           not into_column)
-                y += int(proportion * height)
+                new_width = width
+                new_height = int(proportion * height)
 
-        if len(file_tree[1]) == 0:
+            # If the resulting rectangle is invisible, then just skip it.
+            # If the item is a file, add its rectangle
+            # otherwise recurse within it.
+            if new_width == 0 or new_height == 0:
+                continue
+            elif not os.path.isdir(item[0]):
+                rect_list.append((x, y, new_width, new_height))
+            else:
+                rect_list += self.calculate_rectangles(x, y,
+                                                       new_width,
+                                                       new_height, item,
+                                                       not into_column)
+            # Update x and y
+            if into_column:
+                x += new_width
+            if not into_column:
+                y += new_height
+
+        # Adding a seperate case for the final square to account for rounding.
+
+        if self._file_sizes[file_tree[0]] == 0:
             return rect_list
 
         item = file_tree[1][-1]
 
         if into_column:
-            if not os.path.isdir(item[0]):
-                rect_list.append((x, y, width - (x - init_x), height))
-            else:
-                rect_list += self.calculate_rectangles(x, y,
-                                                       width - (x - init_x),
-                                                       height, item,
-                                                       not into_column)
-
+            new_width = width - (x - init_x)
+            new_height = height
         else:
-            if not os.path.isdir(item[0]):
-                rect_list.append((x, y, width, height - (y - init_y)))
-            else:
-                rect_list += self.calculate_rectangles(x, y, width,
-                                                       height - (y - init_y),
-                                                       item,
-                                                       not into_column)
+            new_width = width
+            new_height = height - (y - init_y)
+
+        # If the resulting rectangle is invisible, then just skip it.
+        if new_width == 0 or new_height == 0:
+            return rect_list
+        elif not os.path.isdir(item[0]):
+            rect_list.append((x, y, new_width, new_height))
+        else:
+            rect_list += self.calculate_rectangles(x, y,
+                                                   new_width,
+                                                   new_height, item,
+                                                   not into_column)
 
         return rect_list
 
