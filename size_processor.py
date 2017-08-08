@@ -17,6 +17,7 @@ class SizeProcessor:
     def __init__(self, folder_path, divider="/"):
         self._divider = divider
         self._file_sizes = {}
+        self._file_rectangles = {}
         self._file_tree = self._add_subtrees(folder_path)
         self._decimal_addon = 0.0
 
@@ -49,6 +50,12 @@ class SizeProcessor:
         Gets the list of subfolder sizes for this directory.
         """
         return self._file_sizes
+
+    def get_file_rectangles(self):
+        """
+        Gets the dictionary mapping filepaths to corresponding rectangles.
+        """
+        return self._file_rectangles
 
     def calculate_rectangles(self, x, y, width, height, file_tree, into_column):
         """
@@ -83,12 +90,14 @@ class SizeProcessor:
                 new_height = int(proportion * height)
 
             # If the resulting rectangle is invisible, then just skip it.
-            # If the item is a file, add its rectangle
+            # If the item is a file, add its rectangle to the list and record it
+            #  in the dictionary.
             # otherwise recurse within it.
             if new_width == 0 or new_height == 0:
                 continue
             elif not os.path.isdir(item[0]):
                 rect_list.append((x, y, new_width, new_height))
+                self._file_rectangles[item] = (x, y, new_width, new_height)
             else:
                 rect_list += self.calculate_rectangles(x, y,
                                                        new_width,
@@ -101,12 +110,12 @@ class SizeProcessor:
                 y += new_height
 
         # Adding a seperate case for the final square to account for rounding.
-
         if self._file_sizes[file_tree[0]] == 0:
             return rect_list
 
         item = file_tree[1][-1]
 
+        # Since this is the last rectangle, it should fill until the end.
         if into_column:
             new_width = width - (x - init_x)
             new_height = height
@@ -119,6 +128,7 @@ class SizeProcessor:
             return rect_list
         elif not os.path.isdir(item[0]):
             rect_list.append((x, y, new_width, new_height))
+            self._file_rectangles[item] = (x, y, new_width, new_height)
         else:
             rect_list += self.calculate_rectangles(x, y,
                                                    new_width,
