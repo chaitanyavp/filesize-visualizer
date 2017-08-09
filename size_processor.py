@@ -19,7 +19,6 @@ class SizeProcessor:
         self._file_sizes = {}
         self._file_rectangles = {}
         self._file_tree = self._add_subtrees(folder_path)
-        self._decimal_addon = 0.0
 
     def _add_subtrees(self, folder_path):
         subtrees = []
@@ -97,7 +96,7 @@ class SizeProcessor:
                 continue
             elif not os.path.isdir(item[0]):
                 rect_list.append((x, y, new_width, new_height))
-                self._file_rectangles[item] = (x, y, new_width, new_height)
+                self._file_rectangles[(x, y, new_width, new_height)] = item[0]
             else:
                 rect_list += self.calculate_rectangles(x, y,
                                                        new_width,
@@ -128,7 +127,7 @@ class SizeProcessor:
             return rect_list
         elif not os.path.isdir(item[0]):
             rect_list.append((x, y, new_width, new_height))
-            self._file_rectangles[item] = (x, y, new_width, new_height)
+            self._file_rectangles[(x, y, new_width, new_height)] = item[0]
         else:
             rect_list += self.calculate_rectangles(x, y,
                                                    new_width,

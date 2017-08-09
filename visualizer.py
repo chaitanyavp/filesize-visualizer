@@ -39,9 +39,9 @@ class Visualizer:
         return: None
         """
 
-        print(self._size_processor.calculate_rectangles(
-            0, 0, self._screen_width, self._screen_height,
-            self._size_processor.get_file_tree(), True))
+        # print(self._size_processor.calculate_rectangles(
+        #     0, 0, self._screen_width, self._screen_height,
+        #     self._size_processor.get_file_tree(), True))
 
         for rectangle in self._size_processor.calculate_rectangles(
                 0, 0, self._screen_width, self._screen_height,
@@ -113,12 +113,24 @@ class Visualizer:
             A set of x/y coordinates for the mouse's current position.
         @:return: None
         """
-        text_to_display = "Oh wait right now it doesn't work..."
-        # selected_file = find_file(pos[0], pos[1], self._screen_width,
-        #                           self._screen_height)
-        # text_to_display = selected_file.path_name + " " + selected_file.file_size + " " + \
-        #                   selected_file.subfolders.size + " subfolders"
+
+        selected_file = self._find_file(pos)
+        text_to_display = selected_file + " (" \
+            + str(self._size_processor.get_file_sizes()[selected_file]) + ")"
+
         return text_to_display
+
+    def _find_file(self, pos):
+        x, y = pos
+        file_rectangles = self._size_processor.get_file_rectangles()
+
+        # Linear search since the list is unsorted.
+        for rect in list(file_rectangles):
+            # if str(type(rect[0])) == "<class 'str'>":
+            #     print(rect)
+            if (rect[0] <= x <= rect[0] + rect[2]) and (
+                    rect[1] <= y <= rect[1] + rect[3]):
+                return file_rectangles[rect]
 
     def generate_random_color(self):
         """
