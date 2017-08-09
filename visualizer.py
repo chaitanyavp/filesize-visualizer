@@ -90,6 +90,7 @@ class Visualizer:
 
         @:return: None
         """
+
         continue_running = True
         while continue_running:
             for event in pygame.event.get():
@@ -128,8 +129,8 @@ class Visualizer:
         for rect in list(file_rectangles):
             # if str(type(rect[0])) == "<class 'str'>":
             #     print(rect)
-            if (rect[0] <= x <= rect[0] + rect[2]) and (
-                    rect[1] <= y <= rect[1] + rect[3]):
+            if (rect[0] <= x < rect[0] + rect[2]) and (
+                    rect[1] <= y < rect[1] + rect[3]):
                 return file_rectangles[rect]
 
     def generate_random_color(self):
