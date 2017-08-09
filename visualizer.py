@@ -1,4 +1,5 @@
 import pygame
+import os
 from size_processor import SizeProcessor
 from homescreen import Homescreen
 import random
@@ -96,9 +97,16 @@ class Visualizer:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     continue_running = False
-                elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    display_text = self.process_left_click(
-                        pygame.mouse.get_pos())
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 3:
+                        display_text = self.process_right_click(
+                            pygame.mouse.get_pos())
+                    elif event.button == 2:
+                        display_text = self.process_middle_click(
+                            pygame.mouse.get_pos())
+                    else:
+                        display_text = self.process_left_click(
+                            pygame.mouse.get_pos())
                     self._update_text(display_text)
                     pygame.display.flip()
         pygame.quit()
@@ -116,10 +124,48 @@ class Visualizer:
         """
 
         selected_file = self._find_file(pos)
-        text_to_display = selected_file + " (" \
+
+        return selected_file  + " (" \
             + str(self._size_processor.get_file_sizes()[selected_file]) + ")"
 
-        return text_to_display
+    def process_middle_click(self, pos):
+        """
+        Processes the event for the left mouse click.
+
+        Specifically, it will display the path, size, and number of sub-directories
+        for the currently selected directory (rectangle).
+
+        @:type pos: Tuple
+            A set of x/y coordinates for the mouse's current position.
+        @:return: None
+        """
+
+        selected_file = self._find_file(pos)
+        os.startfile(selected_file)
+        return selected_file + " (" \
+            + str(self._size_processor.get_file_sizes()[selected_file]) + ")"
+
+    def process_right_click(self, pos):
+        """
+        Processes the event for the left mouse click.
+
+        Specifically, it will display the path, size, and number of sub-directories
+        for the currently selected directory (rectangle).
+
+        @:type pos: Tuple
+            A set of x/y coordinates for the mouse's current position.
+        @:return: None
+        """
+
+        selected_file = self._find_file(pos)
+        path = selected_file.split("/")
+        directory = ""
+        if len(path) > 1:
+            for item in path[:-1]:
+                directory += item + "/"
+        os.startfile(directory)
+        return selected_file + " (" \
+            + str(self._size_processor.get_file_sizes()[selected_file]) + ")"
 
     def _find_file(self, pos):
         x, y = pos
