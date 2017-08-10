@@ -120,7 +120,7 @@ class Visualizer:
 
         @:type pos: Tuple
             A set of x/y coordinates for the mouse's current position.
-        @:return: None
+        @:return: The directory path and the file size.
         """
 
         selected_file = self._find_file(pos)
@@ -130,14 +130,15 @@ class Visualizer:
 
     def process_middle_click(self, pos):
         """
-        Processes the event for the left mouse click.
+        Processes the event for the middle mouse click.
 
-        Specifically, it will display the path, size, and number of sub-directories
-        for the currently selected directory (rectangle).
+        Specifically, it will attempt to open the selected file on screen.
+        If it fails, an empty command screen will open/close, and return
+        you to the program again.
 
         @:type pos: Tuple
             A set of x/y coordinates for the mouse's current position.
-        @:return: None
+        @:return: The directory path and the file size.
         """
 
         selected_file = self._find_file(pos)
@@ -147,14 +148,14 @@ class Visualizer:
 
     def process_right_click(self, pos):
         """
-        Processes the event for the left mouse click.
+        Processes the event for the right mouse click.
 
-        Specifically, it will display the path, size, and number of sub-directories
-        for the currently selected directory (rectangle).
+        Specifically, it will open the local directory that contains the
+        selected file.
 
         @:type pos: Tuple
             A set of x/y coordinates for the mouse's current position.
-        @:return: None
+        @:return: The directory path and the file size.
         """
 
         selected_file = self._find_file(pos)
