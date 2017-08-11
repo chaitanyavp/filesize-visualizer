@@ -2,7 +2,7 @@
 		
 		Filesize Visualizer
 
-	Developed by: Vendata Peesapati
+	Developed by: Chaitanya Peesapati
 	Documentation by: Raymond Liu
 	
 	Version: 1.0.0
@@ -103,8 +103,3 @@ Thanks, so can I have an overview?
   or from an IDE, given python 3.5 is installed
 - Currently, it allows viewing of the file path/size, plus file opening
 - It's very colourful!
-
-
-Additional Contact:
---------------------
-Email: vendata.peesapati@mail.utoronto.ca

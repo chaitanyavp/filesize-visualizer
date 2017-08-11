@@ -27,8 +27,8 @@ class Visualizer:
         homescreen = Homescreen()
         self._size_processor = SizeProcessor(homescreen.get_filepath())
 
-        self._screen_width = 800
-        self._screen_height = 800
+        self._screen_width = 700
+        self._screen_height = 750
 
         self._file_display = pygame.display.set_mode(
             [self._screen_width, self._screen_height])
@@ -45,7 +45,7 @@ class Visualizer:
         #     self._size_processor.get_file_tree(), True))
 
         for rectangle in self._size_processor.calculate_rectangles(
-                0, 0, self._screen_width, self._screen_height,
+                0, 0, self._screen_width, self._screen_height - 50,
                 self._size_processor.get_file_tree(), True):
             curr_colour = self.generate_random_color()
 
@@ -62,6 +62,8 @@ class Visualizer:
         # Current code
         self._update_text("Please click on a block to show its details!")
 
+        self._create_user_prompts()
+
         pygame.display.flip()
         self.event_listener()
 
@@ -77,13 +79,38 @@ class Visualizer:
 
     def _update_text(self, new_text):
         """
-        Stub for the update text method.
+        Updates the text in the small bar below the rectangular display.
         """
         pygame.draw.rect(self._file_display, (127, 255, 0),
-                         (0, self._screen_height - 25, self._screen_width, 25))
+                         (0, self._screen_height - 75, self._screen_width, 25))
         new_font = pygame.font.SysFont("Cambria", 12)
         new_label = new_font.render(new_text, 1, (148, 0, 211))
-        self._file_display.blit(new_label, (10, self._screen_height - 20))
+        self._file_display.blit(new_label, (10, self._screen_height - 70))
+
+    def _create_user_prompts(self):
+        """
+        Creates the area holding the user prompt information in the bottom
+        part of the screen.
+        """
+        pygame.draw.rect(self._file_display, (127, 133, 244),
+                         (0, self._screen_height - 50, self._screen_width, 50))
+        header_font = pygame.font.SysFont("Verdana", 14)
+        info_font = pygame.font.SysFont("Verdana", 11)
+
+        header_label = header_font.render("User", 1, (255, 255, 211))
+        header_label2 = header_font.render("Controls:", 1, (255, 255, 211))
+        left_click_label = info_font.render("Left Click: Displays the file path and size above.",
+                                           1, (255, 255, 211))
+        middle_click_label = info_font.render("Middle Click: Attempts to run the selected file.",
+                                             1, (255, 255, 211))
+        right_click_label = info_font.render("Right Click: Opens the selected file's local directory.",
+                                            1, (255, 255, 211))
+
+        self._file_display.blit(header_label, (15, self._screen_height - 44))
+        self._file_display.blit(header_label2, (15, self._screen_height - 28))
+        self._file_display.blit(left_click_label, (95, self._screen_height - 48))
+        self._file_display.blit(middle_click_label, (95, self._screen_height - 33))
+        self._file_display.blit(right_click_label, (95, self._screen_height - 18))
 
     def event_listener(self):
         """
@@ -98,6 +125,8 @@ class Visualizer:
                 if event.type == pygame.QUIT:
                     continue_running = False
                 elif event.type == pygame.MOUSEBUTTONUP:
+                    if pygame.mouse.get_pos()[1] >= 700:
+                        continue
                     if event.button == 3:
                         display_text = self.process_right_click(
                             pygame.mouse.get_pos())
