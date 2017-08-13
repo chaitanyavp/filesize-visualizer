@@ -78,15 +78,15 @@ class SizeProcessor:
 
             # Calculate proportion of current item
             proportion = self._file_sizes[item[0]] / \
-                         self._file_sizes[file_tree[0]]
+                self._file_sizes[file_tree[0]]
 
             # Use this to calculate the height and width of its rectangle
             if into_column:
-                new_width = int(proportion * width)
+                new_width = round(proportion * width)
                 new_height = height
             else:
                 new_width = width
-                new_height = int(proportion * height)
+                new_height = round(proportion * height)
 
             # If the resulting rectangle is invisible, then just skip it.
             # If the item is a file, add its rectangle to the list and record it
@@ -96,6 +96,7 @@ class SizeProcessor:
                 continue
             elif not os.path.isdir(item[0]):
                 rect_list.append((x, y, new_width, new_height))
+
                 self._file_rectangles[(x, y, new_width, new_height)] = item[0]
             else:
                 rect_list += self.calculate_rectangles(x, y,
@@ -133,9 +134,14 @@ class SizeProcessor:
                                                    new_width,
                                                    new_height, item,
                                                    not into_column)
-
         return rect_list
 
+
+def round(num):
+    if num - int(num) >= 0.5:
+        return int(num) + 1
+    else:
+        return int(num)
 
 if __name__ == "__main__":
     # Sanity check by adding a filepath below:
