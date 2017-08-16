@@ -65,7 +65,7 @@ Steps:
 
 (1) Navigate to the folder where you extracted all your files.
 
-(2) Locate the "visualizer.py" file, and launch it.
+(2) Locate the "visualizer.py" file, and launch it as administrator.
     (If it does not automatically launch with Python 3.5, please
      open it with that.)
 
