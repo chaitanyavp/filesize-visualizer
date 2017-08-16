@@ -18,6 +18,8 @@ class SizeProcessor:
         self._divider = divider
         self._file_sizes = {}
         self._file_rectangles = {}
+        self._rounding_error_x = 0.0
+        self._rounding_error_y = 0.0
         self._file_tree = self._add_subtrees(folder_path)
 
     def _add_subtrees(self, folder_path):
@@ -84,9 +86,27 @@ class SizeProcessor:
             if into_column:
                 new_width = round(proportion * width)
                 new_height = height
+
+                self._rounding_error_x += (proportion * width) - new_width
+                if self._rounding_error_x >= 1:
+                    new_width += 1
+                    self._rounding_error_x -= 1
+
+                elif self._rounding_error_x <= -1:
+                    new_width -= 1
+                    self._rounding_error_x += 1
             else:
                 new_width = width
                 new_height = round(proportion * height)
+
+                self._rounding_error_y += (proportion * height) - new_height
+                if self._rounding_error_y >= 1:
+                    new_height += 1
+                    self._rounding_error_y -= 1
+
+                elif self._rounding_error_y <= -1:
+                    new_height -= 1
+                    self._rounding_error_y += 1
 
             # If the resulting rectangle is invisible, then just skip it.
             # If the item is a file, add its rectangle to the list and record it
